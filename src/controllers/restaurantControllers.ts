@@ -43,40 +43,26 @@ const createRestaurant = async (req: Request, res: Response) => {
 export const updateRestaurant = async (req: Request, res: Response) => {
   try {
     const restaurant = await Restaurant.findOne({ user: req.userId });
+
     if (!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    var imageUrl = "";
+    restaurant.name = req.body.name;
+    restaurant.city = req.body.city;
+    restaurant.country = req.body.country;
+    restaurant.deliveryPrice = req.body.deliveryPrice;
+    restaurant.estimatedDeliveryTime = req.body.estimatedDeliveryTime;
+    restaurant.cuisines = req.body.cuisines;
+    restaurant.menuItems = req.body.menuItems;
+    restaurant.lastUpdated = new Date();
 
-    const {
-      name,
-      city,
-      country,
-      deliveryPrice,
-      estimatedDeliveryTime,
-      cuisines,
-      menuItems,
-      lastUpdated,
-    } = req.body;
     if (req.file) {
-      imageUrl = await uploadImage(req.file as Express.Multer.File);
+      const imageUrl = await uploadImage(req.file as Express.Multer.File);
+      restaurant.imageUrl = imageUrl;
     }
-    const updatedRestaurant = await Restaurant.updateOne(
-      {
-        name,
-        city,
-        country,
-        deliveryPrice,
-        estimatedDeliveryTime,
-        cuisines,
-        menuItems,
-        imageUrl,
-        lastUpdated,
-      },
-      { new: true }
-    );
-    res.status(201).json(updatedRestaurant);
+    await restaurant.save();
+    res.status(200).send(restaurant);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Something went wrong" });
