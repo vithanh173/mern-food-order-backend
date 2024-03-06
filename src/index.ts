@@ -6,6 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 import userRoutes from "./routes/userRoutes";
 import restaurantRoutes from "./routes/restaurantRoutes";
+import searchRoutes from "./routes/searchRoutes";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(cors());
 
 app.use("/api/user", userRoutes);
 app.use("/api/restaurant", restaurantRoutes);
+app.use("/api/restaurants/", searchRoutes);
 
 app.get("/health", async (req: Request, res: Response) => {
   res.send({ message: "health OK!" });
