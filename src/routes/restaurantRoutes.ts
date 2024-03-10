@@ -4,6 +4,7 @@ import multer from "multer";
 import restaurantControllers from "../controllers/restaurantControllers";
 import { jwtCheck, jwtParse } from "../middleware/auth";
 import { validateRestaurantRequest } from "../middleware/validation";
+import { param } from "express-validator";
 
 const router = express.Router();
 
@@ -15,7 +16,17 @@ const upload = multer({
   },
 });
 
-router.get("/getRestaurant", jwtCheck, jwtParse, restaurantControllers.getRestaurant);
+router.get("/getRestaurant", jwtCheck, jwtParse, restaurantControllers.getRestaurants);
+
+router.get(
+  "/:restaurantId",
+  param("restaurantId")
+    .isString()
+    .trim()
+    .notEmpty()
+    .withMessage("RestaurantId must be a valid string"),
+  restaurantControllers.getRestaurantById
+);
 
 router.post(
   "/create",

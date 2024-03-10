@@ -4,16 +4,31 @@ import mongoose from "mongoose";
 
 import Restaurant from "../models/restaurant.model";
 
-const getRestaurant = async (req: Request, res: Response) => {
+const getRestaurants = async (req: Request, res: Response) => {
   try {
-    const restaurant = await Restaurant.findOne({ user: req.userId });
+    const restaurants = await Restaurant.findOne({ user: req.userId });
+    if (!restaurants) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+    res.json(restaurants);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error fetching restaurant" });
+  }
+};
+
+const getRestaurantById = async (req: Request, res: Response) => {
+  try {
+    const { restaurantId } = req.params;
+    const restaurant = await Restaurant.findById(restaurantId);
+
     if (!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
     res.json(restaurant);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error fetching restaurant" });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -79,4 +94,4 @@ const uploadImage = async (file: Express.Multer.File) => {
   return uploadResponse.url;
 };
 
-export default { createRestaurant, getRestaurant, updateRestaurant };
+export default { createRestaurant, getRestaurants, getRestaurantById, updateRestaurant };
