@@ -12,13 +12,14 @@ import orderRoutes from "./routes/OrderRoutes";
 const app = express();
 app.use(cors());
 
+app.use("/api/order/checkout/webhook", express.raw({ type: "*/*" }));
+
+app.use(express.json());
+
 app.use("/api/user", userRoutes);
 app.use("/api/restaurant", restaurantRoutes);
 app.use("/api/restaurants/", searchRoutes);
 app.use("/api/order/", orderRoutes);
-app.use("/api/order/checkout/webhook", express.raw({ type: "*/*" }));
-
-app.use(express.json());
 
 app.get("/health", async (req: Request, res: Response) => {
   res.send({ message: "health OK!" });
