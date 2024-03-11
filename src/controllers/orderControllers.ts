@@ -22,6 +22,16 @@ type CheckoutSessionRequest = {
   restaurantId: string;
 };
 
+const getOrders = async (req: Request, res: Response) => {
+  try {
+    const orders = await Order.find({ user: req.userId }).populate("restaurant").populate("user");
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 const stripeWebhookHandler = async (req: Request, res: Response) => {
   let event;
 
@@ -104,7 +114,7 @@ const createLineItems = (
 
     const line_item: Stripe.Checkout.SessionCreateParams.LineItem = {
       price_data: {
-        currency: "gbp",
+        currency: "vnd",
         unit_amount: menuItem.price,
         product_data: {
           name: menuItem.name,
@@ -134,7 +144,7 @@ const createSession = async (
           type: "fixed_amount",
           fixed_amount: {
             amount: deliveryPrice,
-            currency: "gbp",
+            currency: "vnd",
           },
         },
       },
@@ -152,6 +162,7 @@ const createSession = async (
 };
 
 export default {
+  getOrders,
   createCheckoutSession,
   stripeWebhookHandler,
 };

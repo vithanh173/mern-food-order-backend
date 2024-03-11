@@ -5,6 +5,8 @@ import orderControllers from "../controllers/orderControllers";
 
 const router = express.Router();
 
+router.get("/getOrders", jwtCheck, jwtParse, orderControllers.getOrders);
+
 router.post(
   "/checkout/create-checkout-session",
   jwtCheck,
